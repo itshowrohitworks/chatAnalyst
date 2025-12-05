@@ -10,9 +10,9 @@ try:
     print("Connected successfully!")
     print("PostgreSQL version:", result)
 
-    cur.execute("SELECT * FROM app.streamers;")
-    print("Tables:", cur.fetchall())
-
+    cur.execute("SELECT COUNT(*) FROM app.streamers;")
+    print("Streamer count:", cur.fetchone())
+    
     cur.close()
     conn.close()
 
