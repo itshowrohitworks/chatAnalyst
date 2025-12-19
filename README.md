@@ -1,1 +1,1 @@
-# HoldsAll: Machine Learning + PostgreSQL project for intelligent stream analytics
+# ChatAnalyst: Machine Learning + PostgreSQL project for intelligent stream analytics
