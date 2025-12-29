@@ -13,7 +13,12 @@ def train_data(X,y,encoder):
 
     # Initialize and Train the Model
     print("Training Random Forest on {len(X_train)} streams...")
-    model = RandomForestRegressor(n_estimators=100,max_depth=5,random_state=42)
+    model = RandomForestRegressor(
+        n_estimators=150,   # More trees for better averaging
+        max_depth=4,        # Slightly shallower to prevent overfitting
+        min_samples_leaf=5, # Ensure each 'leaf' has at least 5 streams
+        random_state=42
+    )
     model.fit(X_train, y_train)
 
     # Evaluate the Performance
