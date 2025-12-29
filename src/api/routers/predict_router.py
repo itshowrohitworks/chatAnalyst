@@ -1,20 +1,14 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 import pandas as pd
-from pathlib import Path
 import joblib
 import os
 
 router = APIRouter()
 
-# Find project root dynamically
-BASE_DIR = Path(__file__).resolve()
-while not (BASE_DIR / "models").exists():
-    BASE_DIR = BASE_DIR.parent
-
-MODEL_PATH = BASE_DIR / "models" / "streamer_model.pkl"
-ENCODER_PATH = BASE_DIR / "models" / "cat_encoder.pkl"
-FEATURES_PATH = BASE_DIR / "models" / "feature_names.pkl"
+MODEL_PATH = "src/api/models/streamer_model.pkl"
+ENCODER_PATH = "src/api/models/cat_encoder.pkl"
+FEATURES_PATH = "src/api/models/feature_names.pkl"
 
 model = joblib.load(MODEL_PATH)
 encoder = joblib.load(ENCODER_PATH)
