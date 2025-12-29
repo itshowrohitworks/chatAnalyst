@@ -3,15 +3,35 @@ from pydantic import BaseModel
 import pandas as pd
 import joblib
 from pathlib import Path
+import os
 
 router = APIRouter()
+
+def find_models_dir():
+    # 1) allow override via env var
+    env = os.getenv("MODEL_DIR")
+    if env:
+        p = Path(env)
+        if p.exists():
+            return p
+    # 2) search upwards from this file for a "models" directory
+    current = Path(__file__).resolve()
+    for parent in [current] + list(current.parents)[:6]:
+        candidate = parent / "models"
+        if candidate.exists():
+            return candidate
+    # Helpful error if not found
+    raise FileNotFoundError(
+        "models directory not found. Searched from "
+        f"{current} upward. Either add a models/ folder to the repo root or "
+        "set the MODEL_DIR environment variable to the correct path "
+        "(e.g. /opt/render/project/src/models on Render)."
+    )
 
 # -------------------------------------------------
 # Model paths (routers → api → src)
 # -------------------------------------------------
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-MODEL_DIR = BASE_DIR / "models"
-
+MODEL_DIR = find_models_dir()
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
 ENCODER_PATH = MODEL_DIR / "cat_encoder.pkl"
 FEATURES_PATH = MODEL_DIR / "feature_names.pkl"
