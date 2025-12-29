@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: chatanalyst-api
+    runtime: python
+    pythonVersion: 3.11
+    startCommand: "cd src && uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: MODEL_DIR
+        value: /opt/render/project/src/models
+    buildCommand: "pip install -r requirements.txt"
+
+  - type: web
+    name: chatanalyst-frontend
+    runtime: python
+    pythonVersion: 3.11
+    startCommand: "cd src && streamlit run frontend/streamlit_app.py --server.port=$PORT --server.address=0.0.0.0"
+    envVars:
+      - key: API_URL
+        value: https://chatanalyst-api.onrender.com
+      - key: DB_NAME
+        fromDatabase:
+          name: postgres
+          property: dbname
+      - key: DB_USER
+        fromDatabase:
+          name: postgres
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: postgres
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: postgres
+          property: port
+      - key: DB_SCHEMA
+        value: app
+    buildCommand: "pip install -r requirements.txt"
+    depends_on:
+      - chatanalyst-api
+
+databases:
+  - name: postgres
+    region: oregon
