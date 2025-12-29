@@ -7,11 +7,9 @@ from pathlib import Path
 router = APIRouter()
 
 # -------------------------------------------------
-# Model paths (relative to src/api/)
+# Model paths (routers → api → src)
 # -------------------------------------------------
-# routers → api → src
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 MODEL_DIR = BASE_DIR / "models"
 
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
@@ -27,10 +25,7 @@ feature_names = None
 
 
 def load_model():
-    """
-    Load ML artifacts only once (lazy loading).
-    Safe for cloud deployment.
-    """
+    """Load ML artifacts only once (lazy loading)."""
     global model, encoder, feature_names
 
     if model is None:
@@ -57,11 +52,10 @@ class StreamInput(BaseModel):
 # -------------------------------------------------
 @router.post("/")
 def predict_stream_donation(data: StreamInput):
-    # Ensure model is loaded
     load_model()
 
-    # Convert input to DataFrame
-    input_df = pd.DataFrame([data.dict()])
+    # Convert input to DataFrame (Pydantic v2 safe)
+    input_df = pd.DataFrame([data.model_dump()])
 
     # Encode categorical features
     cat_cols = ["niche", "country"]
@@ -76,15 +70,14 @@ def predict_stream_donation(data: StreamInput):
     numeric_df = input_df.drop(columns=cat_cols)
     final_df = pd.concat([numeric_df, encoded_df], axis=1)
 
-    # Ensure all expected features exist
+    # Ensure feature alignment
     for col in feature_names:
         if col not in final_df.columns:
             final_df[col] = 0
 
-    # Reorder columns to match training
     final_df = final_df[feature_names]
 
-    # Predict donation
+    # Predict
     prediction = model.predict(final_df)[0]
 
     return {
