@@ -1,11 +1,6 @@
 # Run file as module: python -m src.pipeline.data_pipeline
 import pandas as pd
-import joblib
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error
-
 
 from data.fetch_data import fetch_ml_data
 
