@@ -7,7 +7,10 @@ import os
 
 router = APIRouter()
 
-BASE_DIR = Path(__file__).resolve().parents[3]
+# Find project root dynamically
+BASE_DIR = Path(__file__).resolve()
+while not (BASE_DIR / "models").exists():
+    BASE_DIR = BASE_DIR.parent
 
 MODEL_PATH = BASE_DIR / "models" / "streamer_model.pkl"
 ENCODER_PATH = BASE_DIR / "models" / "cat_encoder.pkl"
