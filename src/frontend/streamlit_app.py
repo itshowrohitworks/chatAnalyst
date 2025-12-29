@@ -39,31 +39,35 @@ country = st.selectbox(
 st.divider()
 
 # Predict Button 
-if st.button("Predict Donation"):
-    payload = {
-        "avg_viewers": avg_viewers,
-        "peak_viewers": peak_viewers,
-        "chat_rate": chat_rate,
-        "like_count": like_count,
-        "duration_minutes": duration_minutes,
-        "niche": niche,
-        "country": country
-    }
+# Centered Predict Button
+col1, col2, col3 = st.columns([1, 2, 1])
 
-    try:
-        response = requests.post(
-            "http://127.0.0.1:8000/predict/",
-            json=payload,
-            timeout=5
-        )
+with col2:
+    if st.button("Predict Donation"):
+        payload = {
+            "avg_viewers": avg_viewers,
+            "peak_viewers": peak_viewers,
+            "chat_rate": chat_rate,
+            "like_count": like_count,
+            "duration_minutes": duration_minutes,
+            "niche": niche,
+            "country": country
+        }
 
-        if response.status_code == 200:
-            result = response.json()
-            st.success(
-                f"Expected Donation: ₹ {result['predicted_stream_donation']}"
+        try:
+            response = requests.post(
+                "http://127.0.0.1:8000/predict/",
+                json=payload,
+                timeout=5
             )
-        else:
-            st.error("Prediction failed. Check FastAPI logs.")
 
-    except Exception as e:
-        st.error(f"Could not connect to API: {e}")
+            if response.status_code == 200:
+                result = response.json()
+                st.success(
+                    f"Expected Donation: ₹ {result['predicted_stream_donation']}"
+                )
+            else:
+                st.error("Prediction failed. Check FastAPI logs.")
+
+        except Exception as e:
+            st.error(f"Could not connect to API: {e}")
