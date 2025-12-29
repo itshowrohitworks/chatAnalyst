@@ -2,19 +2,18 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 
-from data.fetch_data import fetch_ml_data
-
-df = fetch_ml_data()
-
-def droping_and_encoding_columns(df):
-    cols_to_numeric = [ 
-        'avg_viewers', 'avg_peak_viewers', 'avg_chat_rate', 
-        'avg_like_count', 'total_donations'
+def droping_and_encoding_columns(df,threshold=0.1):
+    cols_to_numeric = cols_to_numeric = [
+        'avg_viewers', 
+        'peak_viewers', 
+        'chat_rate', 'like_count', 
+        'duration_minutes', 
+        'stream_donations'
     ]
     for col in cols_to_numeric:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
-    y = df['total_donations']
+    y = df['stream_donations']
 
     # OneHot Encoding for categorical columns:
     encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
@@ -30,12 +29,19 @@ def droping_and_encoding_columns(df):
     # Combining numerical and encoded columns
     df_combined = pd.concat([df.drop(columns=cat_col), encoded_df], axis=1)
 
-    # 5. Drop Unwanted Columns all at once
-    COLS_TO_DROP = [
-        'followers', 'total_minutes', 'avg_like_count', 
-        'niche_Gaming', 'streamer_id', 'total_donations'
-    ]
+    # Manually dropping not needed columns:
+    manual_drops = ['stream_id', 'stream_donations']
+
+    # Dynamically dropping columns as per correlation:
+    correlations = df_combined.corr()['stream_donations'].abs()
+
+    features_to_keep = correlations[correlations >= threshold].index.tolist()
+
+    final_features = [f for f in features_to_keep if f not in manual_drops]
     
-    X = df_combined.drop(columns=COLS_TO_DROP)
-    
+    X = df_combined[final_features]
+
+    print(f"Dynamic Selection: Kept {len(final_features)} features with correlation >= {threshold}")
+    print(f"Features kept: {final_features}")
+
     return X, y, encoder
