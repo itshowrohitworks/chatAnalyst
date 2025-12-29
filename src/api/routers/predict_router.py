@@ -6,9 +6,6 @@ from pathlib import Path
 
 router = APIRouter()
 
-# -------------------------------------------------
-# Model paths (routers → api → src)
-# -------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 MODEL_DIR = BASE_DIR / "models"
 
@@ -16,9 +13,6 @@ MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
 ENCODER_PATH = MODEL_DIR / "cat_encoder.pkl"
 FEATURES_PATH = MODEL_DIR / "feature_names.pkl"
 
-# -------------------------------------------------
-# Lazy-loaded global objects
-# -------------------------------------------------
 model = None
 encoder = None
 feature_names = None
@@ -34,9 +28,6 @@ def load_model():
         feature_names = joblib.load(FEATURES_PATH)
 
 
-# -------------------------------------------------
-# Input Schema
-# -------------------------------------------------
 class StreamInput(BaseModel):
     avg_viewers: float
     peak_viewers: float
@@ -47,9 +38,7 @@ class StreamInput(BaseModel):
     country: str
 
 
-# -------------------------------------------------
-# Prediction Endpoint
-# -------------------------------------------------
+
 @router.post("/")
 def predict_stream_donation(data: StreamInput):
     load_model()
