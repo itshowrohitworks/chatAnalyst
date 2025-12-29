@@ -2,20 +2,43 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 import pandas as pd
 import joblib
-import os
+from pathlib import Path
 
 router = APIRouter()
 
-MODEL_PATH = "src/api/models/streamer_model.pkl"
-ENCODER_PATH = "src/api/models/cat_encoder.pkl"
-FEATURES_PATH = "src/api/models/feature_names.pkl"
+# -------------------------------------------------
+# Model paths (relative to src/api/)
+# -------------------------------------------------
+MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
 
-model = joblib.load(MODEL_PATH)
-encoder = joblib.load(ENCODER_PATH)
-feature_names = joblib.load(FEATURES_PATH)
+MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
+ENCODER_PATH = MODEL_DIR / "cat_encoder.pkl"
+FEATURES_PATH = MODEL_DIR / "feature_names.pkl"
+
+# -------------------------------------------------
+# Lazy-loaded global objects
+# -------------------------------------------------
+model = None
+encoder = None
+feature_names = None
 
 
-# Input schema 
+def load_model():
+    """
+    Load ML artifacts only once (lazy loading).
+    Safe for cloud deployment.
+    """
+    global model, encoder, feature_names
+
+    if model is None:
+        model = joblib.load(MODEL_PATH)
+        encoder = joblib.load(ENCODER_PATH)
+        feature_names = joblib.load(FEATURES_PATH)
+
+
+# -------------------------------------------------
+# Input Schema
+# -------------------------------------------------
 class StreamInput(BaseModel):
     avg_viewers: float
     peak_viewers: float
@@ -26,12 +49,18 @@ class StreamInput(BaseModel):
     country: str
 
 
+# -------------------------------------------------
+# Prediction Endpoint
+# -------------------------------------------------
 @router.post("/")
 def predict_stream_donation(data: StreamInput):
+    # Ensure model is loaded
+    load_model()
+
     # Convert input to DataFrame
     input_df = pd.DataFrame([data.dict()])
 
-    # Encode categorical columns
+    # Encode categorical features
     cat_cols = ["niche", "country"]
     encoded = encoder.transform(input_df[cat_cols])
 
@@ -40,7 +69,7 @@ def predict_stream_donation(data: StreamInput):
         columns=encoder.get_feature_names_out(cat_cols)
     )
 
-    # Combine numeric + encoded
+    # Combine numeric and encoded features
     numeric_df = input_df.drop(columns=cat_cols)
     final_df = pd.concat([numeric_df, encoded_df], axis=1)
 
@@ -49,10 +78,10 @@ def predict_stream_donation(data: StreamInput):
         if col not in final_df.columns:
             final_df[col] = 0
 
-    # Reorder columns
+    # Reorder columns to match training
     final_df = final_df[feature_names]
 
-    # Predict
+    # Predict donation
     prediction = model.predict(final_df)[0]
 
     return {
