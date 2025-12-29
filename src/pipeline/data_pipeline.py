@@ -39,8 +39,3 @@ def droping_and_encoding_columns(df):
     X = df_combined.drop(columns=COLS_TO_DROP)
     
     return X, y, encoder
-
-X,y,emd = droping_and_encoding_columns(df)
-print(X.shape,y.shape)
-print('\n')
-print(emd.categories_)
