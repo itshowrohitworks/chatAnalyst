@@ -1,14 +1,10 @@
 import streamlit as st
 import requests
 from pathlib import Path
-import os
 
 # Get absolute path to this file's directory
 BASE_DIR = Path(__file__).resolve().parent
 LOGO_PATH = BASE_DIR / "logo" / "logo.png"
-
-# API URL from env or default to localhost for local dev
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 st.set_page_config(
     page_title="Chat Analyst",
@@ -60,7 +56,7 @@ with col2:
 
         try:
             response = requests.post(
-                f"{API_URL}/predict/",
+                "http://127.0.0.1:8000/predict/",
                 json=payload,
                 timeout=5
             )
