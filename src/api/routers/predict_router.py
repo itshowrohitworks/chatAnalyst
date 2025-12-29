@@ -9,13 +9,7 @@ router = APIRouter()
 # -------------------------------------------------
 # Model paths (routers → api → src)
 # -------------------------------------------------
-<<<<<<< HEAD
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-=======
-# routers → api → src
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
->>>>>>> 58a6cbb9dec559966a4de3ac08703ac8dd479097
 MODEL_DIR = BASE_DIR / "models"
 
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
