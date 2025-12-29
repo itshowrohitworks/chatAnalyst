@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from api.database import get_db
-from api.models.donation import Donation
+from api.data.donation import Donation
 
 router = APIRouter()
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from api.database import get_db
-from api.models.streamer import Streamer
+from api.data.streamer import Streamer
 
 router = APIRouter()
 
