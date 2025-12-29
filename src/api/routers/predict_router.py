@@ -6,7 +6,6 @@ import os
 
 router = APIRouter()
 
-# Load model artifacts ONCE (important for performance)
 MODEL_PATH = "models/streamer_model.pkl"
 ENCODER_PATH = "models/cat_encoder.pkl"
 FEATURES_PATH = "models/feature_names.pkl"
@@ -16,7 +15,7 @@ encoder = joblib.load(ENCODER_PATH)
 feature_names = joblib.load(FEATURES_PATH)
 
 
-# Input schema (what user sends)
+# Input schema 
 class StreamInput(BaseModel):
     avg_viewers: float
     peak_viewers: float
