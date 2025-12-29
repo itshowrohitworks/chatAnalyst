@@ -7,17 +7,10 @@ from pathlib import Path
 router = APIRouter()
 
 # -------------------------------------------------
-# Robust model directory discovery (Render-safe)
+# Model paths (routers → api → src)
 # -------------------------------------------------
-def find_models_dir() -> Path:
-    current = Path(__file__).resolve()
-    for parent in current.parents:
-        candidate = parent / "models"
-        if candidate.exists():
-            return candidate
-    raise FileNotFoundError("models directory not found")
-
-MODEL_DIR = find_models_dir()
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+MODEL_DIR = BASE_DIR / "models"
 
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
 ENCODER_PATH = MODEL_DIR / "cat_encoder.pkl"
@@ -32,7 +25,9 @@ feature_names = None
 
 
 def load_model():
+    """Load ML artifacts only once (lazy loading)."""
     global model, encoder, feature_names
+
     if model is None:
         model = joblib.load(MODEL_PATH)
         encoder = joblib.load(ENCODER_PATH)
@@ -59,8 +54,10 @@ class StreamInput(BaseModel):
 def predict_stream_donation(data: StreamInput):
     load_model()
 
+    # Convert input to DataFrame (Pydantic v2 safe)
     input_df = pd.DataFrame([data.model_dump()])
 
+    # Encode categorical features
     cat_cols = ["niche", "country"]
     encoded = encoder.transform(input_df[cat_cols])
 
@@ -69,15 +66,18 @@ def predict_stream_donation(data: StreamInput):
         columns=encoder.get_feature_names_out(cat_cols)
     )
 
+    # Combine numeric and encoded features
     numeric_df = input_df.drop(columns=cat_cols)
     final_df = pd.concat([numeric_df, encoded_df], axis=1)
 
+    # Ensure feature alignment
     for col in feature_names:
         if col not in final_df.columns:
             final_df[col] = 0
 
     final_df = final_df[feature_names]
 
+    # Predict
     prediction = model.predict(final_df)[0]
 
     return {
