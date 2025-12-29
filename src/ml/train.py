@@ -30,10 +30,10 @@ def train_data(X,y,encoder):
     print(f"Accuracy (R2 Score): {r2:.4f}") 
 
     # Save everything to the 'models' folder
-    os.makedirs('models', exist_ok=True)
+    os.makedirs('src/models', exist_ok=True)
 
-    joblib.dump(model, 'models/streamer_model.pkl')
-    joblib.dump(encoder, 'models/cat_encoder.pkl')
+    joblib.dump(model, 'src/models/streamer_model.pkl')
+    joblib.dump(encoder, 'src/models/cat_encoder.pkl')
     joblib.dump(X.columns.tolist(), 'models/feature_names.pkl')
 
     print("Model, Encoder, and Feature list saved successfully!")
