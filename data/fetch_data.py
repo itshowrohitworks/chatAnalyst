@@ -47,6 +47,3 @@ def fetch_ml_data():
             return df
     finally:
         conn.close()
-
-df = fetch_ml_data()
-print(df.head())
