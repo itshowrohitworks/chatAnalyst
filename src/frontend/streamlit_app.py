@@ -1,7 +1,15 @@
 import streamlit as st
 import requests
+from pathlib import Path
 
-st.set_page_config(page_title="Chat Analyst", page_icon="🎥")
+# Get absolute path to this file's directory
+BASE_DIR = Path(__file__).resolve().parent
+LOGO_PATH = BASE_DIR / "logo" / "logo.png"
+
+st.set_page_config(
+    page_title="Chat Analyst",
+    page_icon=str(LOGO_PATH)
+)
 
 st.title("Chat Analyst – Donation Predictor")
 st.write(
@@ -31,7 +39,7 @@ country = st.selectbox(
 st.divider()
 
 # Predict Button 
-if st.button("Predict Donation 💰"):
+if st.button("Predict Donation"):
     payload = {
         "avg_viewers": avg_viewers,
         "peak_viewers": peak_viewers,
@@ -52,7 +60,7 @@ if st.button("Predict Donation 💰"):
         if response.status_code == 200:
             result = response.json()
             st.success(
-                f"💰 Expected Donation: ₹ {result['predicted_stream_donation']}"
+                f"Expected Donation: ₹ {result['predicted_stream_donation']}"
             )
         else:
             st.error("Prediction failed. Check FastAPI logs.")
