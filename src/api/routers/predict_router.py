@@ -8,24 +8,38 @@ import os
 router = APIRouter()
 
 def find_models_dir():
-    # 1) allow override via env var
+    """Find models directory with multiple fallback paths."""
+    # 1) Check env var first
     env = os.getenv("MODEL_DIR")
     if env:
         p = Path(env)
         if p.exists():
             return p
-    # 2) search upwards from this file for a "models" directory
+        print(f"⚠️  MODEL_DIR env var set to {env} but doesn't exist")
+    
+    # 2) Check relative to this file (src/api/routers → src/models)
     current = Path(__file__).resolve()
-    for parent in [current] + list(current.parents)[:6]:
+    relative_up = current.parent.parent.parent / "models"
+    if relative_up.exists():
+        return relative_up
+    
+    # 3) Search upwards for any "models" folder
+    for parent in current.parents:
         candidate = parent / "models"
         if candidate.exists():
             return candidate
-    # Helpful error if not found
+    
+    # 4) Render-specific: check /opt/render/project/src/models
+    render_path = Path("/opt/render/project/src/models")
+    if render_path.exists():
+        return render_path
+    
+    # If nothing found, raise helpful error
     raise FileNotFoundError(
-        "models directory not found. Searched from "
-        f"{current} upward. Either add a models/ folder to the repo root or "
-        "set the MODEL_DIR environment variable to the correct path "
-        "(e.g. /opt/render/project/src/models on Render)."
+        f"models directory not found!\n"
+        f"  Checked: {relative_up}, env var paths, upward search\n"
+        f"  On Render, set: MODEL_DIR=/opt/render/project/src/models\n"
+        f"  Current file: {current}"
     )
 
 # -------------------------------------------------
