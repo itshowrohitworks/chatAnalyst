@@ -9,7 +9,8 @@ router = APIRouter()
 # -------------------------------------------------
 # Model paths (relative to src/api/)
 # -------------------------------------------------
-MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+BASE_DIR = Path(__file__).resolve().parents[2]  # points to src/
+MODEL_DIR = BASE_DIR / "models"
 
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
 ENCODER_PATH = MODEL_DIR / "cat_encoder.pkl"
