@@ -40,8 +40,4 @@ def droping_and_encoding_columns(df,threshold=0.1):
     final_features = [f for f in features_to_keep if f not in manual_drops]
     
     X = df_combined[final_features]
-
-    print(f"Dynamic Selection: Kept {len(final_features)} features with correlation >= {threshold}")
-    print(f"Features kept: {final_features}")
-
     return X, y, encoder
