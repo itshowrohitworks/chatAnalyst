@@ -11,7 +11,7 @@ st.write(
 
 st.divider()
 
-# --- Input Fields ---
+# Input Fields 
 avg_viewers = st.number_input("Average Viewers", min_value=0, value=1000)
 peak_viewers = st.number_input("Peak Viewers", min_value=0, value=2000)
 chat_rate = st.number_input("Chat Rate", min_value=0, value=200)
@@ -30,7 +30,7 @@ country = st.selectbox(
 
 st.divider()
 
-# --- Predict Button ---
+# Predict Button 
 if st.button("Predict Donation 💰"):
     payload = {
         "avg_viewers": avg_viewers,
