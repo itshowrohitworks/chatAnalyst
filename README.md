@@ -224,7 +224,7 @@ uvicorn api.main:app --reload --app-dir src
 ```
 ## 5. Start Streamlit frontend
 ```
-streamlit run src/frontend/streamlit_app.py --server.address localhost
+streamlit run streamlit_app.py --server.address localhost
 ```
 ## Streamlit UI:
 ```
