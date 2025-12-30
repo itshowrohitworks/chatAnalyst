@@ -6,7 +6,7 @@ from pathlib import Path
 
 router = APIRouter()
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 MODEL_DIR = BASE_DIR / "models"
 
 MODEL_PATH = MODEL_DIR / "streamer_model.pkl"
