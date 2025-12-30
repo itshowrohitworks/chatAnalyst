@@ -5,10 +5,10 @@ import os
 
 # Get absolute path to this file's directory
 BASE_DIR = Path(__file__).resolve().parent
-LOGO_PATH = BASE_DIR / "logo" / "logo.png"
+LOGO_PATH = BASE_DIR / "src" / "frontend" / "logo" / "logo.png"
 
 # API URL from env or default to localhost for local dev
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+API_URL = os.getenv("API_URL", "https://chat-analyst-api.onrender.com")
 
 st.set_page_config(
     page_title="Chat Analyst",
