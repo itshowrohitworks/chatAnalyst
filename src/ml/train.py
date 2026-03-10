@@ -2,7 +2,8 @@
 from data.fetch_data import fetch_ml_data
 from src.pipeline.data_pipeline import droping_and_encoding_columns
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import mean_absolute_error, r2_score
 import os
 import joblib
@@ -12,13 +13,10 @@ def train_data(X,y,encoder):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Initialize and Train the Model
-    print("Training Random Forest on {len(X_train)} streams...")
-    model = RandomForestRegressor(
-        n_estimators=150,   # More trees for better averaging
-        max_depth=4,        # Slightly shallower to prevent overfitting
-        min_samples_leaf=5, # Ensure each 'leaf' has at least 5 streams
-        random_state=42
-    )
+    print(f"Training Linear Regression on {len(X_train)} streams...")
+    model = Pipeline([
+        ('lr',LinearRegression()),
+    ])
     model.fit(X_train, y_train)
 
     # Evaluate the Performance
